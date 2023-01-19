@@ -1,2 +1,2 @@
-# Thesis
-Thesis 
+# Sindimwo Thesis
+Sindimwo Thesis 
