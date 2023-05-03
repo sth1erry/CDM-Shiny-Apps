@@ -1,5 +1,4 @@
-# Sindimwo Thesis
-Sindimwo Thesis 
+# CDM Shiny Apps 
 
 
 *Final version
