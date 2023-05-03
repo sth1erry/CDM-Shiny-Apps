@@ -1,0 +1,63 @@
+---
+title: "PCA app"
+output: html_notebook
+---
+
+```{r}
+#load libraries
+library(shiny)
+library(shinydashboard)
+library(plotly)
+```
+
+```{r}
+#load data
+breast_PCA_data <- read.csv("/home/stad2018/breast_PCA_data.csv")
+```
+
+
+```{r}
+
+# Define the UI
+ui <- dashboardPage(
+  dashboardHeader(title = "PCA Plot"),
+  dashboardSidebar(
+    selectInput("cancer_type", "Select a cancer type:",
+                choices = c("Breast Cancer")),
+    radioButtons("color_by", "Color by:",
+                 choices = c("Sex", "Primary/Metastasis"), selected = "Sex")
+  ),
+  dashboardBody(
+    plotlyOutput("pca_plot")
+  )
+)
+
+
+server <- function(input, output) {
+  
+  # Subset the data based on the selected cancer type
+  PCA_data <- reactive({
+    if (input$cancer_type == "Breast Cancer") {
+      breast_PCA_data
+    } 
+  })
+  
+  # Create the PCA plot
+  output$pca_plot <- renderPlotly({
+    # Subset the data based on the selected color option
+    if (input$color_by == "Sex") {
+      color_choice <- "sex"
+    } else {
+      color_choice <- "primary_or_metastasis"
+    }
+    
+    plot_ly(data = PCA_data(), x = ~PC1, y = ~PC2, width = 900, height = 600, color = as.factor(PCA_data()[[color_choice]]),text = ~paste("Cell line: ", DepMap_ID, '$<br>Primary Disease:', primary_disease))
+  })
+
+}
+```
+
+```{r}
+shinyApp(ui, server)
+```
+
