@@ -1,0 +1,48 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+genes <- read.table("/home/stad2018/shiny/breast_genes.txt")
+colnames(genes)[1] <- "Genes"
+
+```
+
+```{r}
+library(shiny)
+library(shinydashboard)
+install.packages("DT")
+library(DT)
+
+ui <- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody(
+    tabItem(tabName = "Genes",
+            DTOutput("table"))
+  )
+)
+
+server <- function(input, output) {
+  
+  output$table <- renderDT({
+    genes <- data.frame(genes = genes)
+    datatable(genes, rownames = FALSE,
+              options = list(columnDefs = list(list(targets = "_all", className = "dt-center")),
+                             pageLength = 10,
+                             lengthMenu = c(5, 10, 20)),
+              callback = JS("table.on('click.dt', 'tr', function() {
+                              var data = table.row(this).data();
+                              window.open('https://www.ncbi.nlm.nih.gov/gene/?term=' + data[0]);
+                            });"))
+  })
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+
+```
+
